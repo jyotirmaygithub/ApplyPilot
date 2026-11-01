@@ -1,0 +1,166 @@
+# ApplyPilot search configuration — Jyotirmay Gupta (India)
+# Target: Backend / Full Stack; 10 verified applications per portal per day when volume allows.
+
+defaults:
+  location: "Noida, India"
+  distance: 50
+  hours_old: 72
+  results_per_site: 50
+
+country: "India"
+
+boards:
+  - indeed
+  - linkedin
+  - glassdoor
+  - google
+
+# Locations to search (JobSpy / board queries)
+locations:
+  - location: "Noida, India"
+    remote: false
+  - location: "Delhi NCR, India"
+    remote: false
+  - location: "Gurugram, India"
+    remote: false
+  - location: "Bangalore, India"
+    remote: false
+  - location: "Hyderabad, India"
+    remote: false
+  - location: "Pune, India"
+    remote: false
+  - location: "Mumbai, India"
+    remote: false
+  - location: "Chennai, India"
+    remote: false
+  - location: "Remote, India"
+    remote: true
+  - location: "India"
+    remote: false
+
+# Accept/reject patterns for job location text
+location:
+  remote_only: false
+  primary: "Noida"
+  accept_patterns:
+    - "Noida"
+    - "Greater Noida"
+    - "Delhi"
+    - "Delhi NCR"
+    - "NCR"
+    - "Gurgaon"
+    - "Gurugram"
+    - "Bangalore"
+    - "Bengaluru"
+    - "Hyderabad"
+    - "Pune"
+    - "Mumbai"
+    - "Chennai"
+    - "India"
+    - "Remote"
+    - "Work from home"
+    - "WFH"
+    - "Work from anywhere"
+  reject_patterns:
+    - "US only"
+    - "USA only"
+    - "United States only"
+    - "Europe only"
+    - "UK only"
+    - "Canada only"
+    - "visa sponsorship required"
+    - "must be based in US"
+    - "must be based in USA"
+
+# Tier 1 = primary titles; Tier 2 = secondary; Tier 3 = broader backend net
+queries:
+  - query: "Backend Engineer"
+    tier: 1
+  - query: "Backend Software Engineer"
+    tier: 1
+  - query: "SDE 1"
+    tier: 1
+  - query: "Software Development Engineer I"
+    tier: 1
+  - query: "Node.js Developer"
+    tier: 1
+  - query: "Node.js Backend Engineer"
+    tier: 1
+  - query: "Python Developer"
+    tier: 1
+  - query: "Python Backend Developer"
+    tier: 1
+  - query: "FastAPI Developer"
+    tier: 1
+  - query: "Full Stack Engineer"
+    tier: 1
+  - query: "Full Stack Developer"
+    tier: 1
+  - query: "API Developer"
+    tier: 2
+  - query: "Microservices Engineer"
+    tier: 2
+  - query: "AI Backend Engineer"
+    tier: 2
+  - query: "AI Application Engineer"
+    tier: 2
+  - query: "LLM Application Engineer"
+    tier: 2
+  - query: "Integration Engineer"
+    tier: 2
+  - query: "Backend Developer Node.js TypeScript"
+    tier: 3
+  - query: "Backend Developer Python FastAPI"
+    tier: 3
+  - query: "Full Stack Developer Node.js React"
+    tier: 3
+
+exclude_titles:
+  - "senior director"
+  - "VP "
+  - "vice president"
+  - "chief"
+  - "intern"
+  - "internship"
+  - "co-op"
+  - "data scientist"
+  - "data analyst"
+  - "machine learning researcher"
+  - "AI researcher"
+  - "prompt engineer"
+  - "AI trainer"
+  - "principal scientist"
+
+# Prefer JobSpy + direct site scrapes; Workday optional
+discovery:
+  sources:
+    - jobspy
+    - smartextract
+    - workday
+
+# Operational notes for the agent (not all consumed by JobSpy)
+portals:
+  daily_verified_applications_per_portal: 10
+  apply:
+    - Naukri
+    - Wellfound
+    - Cutshort
+    - Instahyre
+    - Hirist
+    - Indeed India
+    - Himalayas
+    - Y Combinator Work at a Startup
+    - Foundit
+    - Shine
+    - TimesJobs
+    - Glassdoor
+    - We Work Remotely
+  also:
+    - discover_additional_portals: true
+    - discover_company_career_sites: true
+  linkedin:
+    mode: like_hiring_posts
+    apply_via_linkedin_jobs: false
+    like_job_posts: true
+    no_comment_or_post: true
+    posts_lookback_days: 7

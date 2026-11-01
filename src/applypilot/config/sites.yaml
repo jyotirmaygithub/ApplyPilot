@@ -153,7 +153,39 @@ sites:
     type: static
 
   - name: "Wellfound"
-    url: "https://wellfound.com/role/l/software-engineer/canada"
+    url: "https://wellfound.com/role/l/software-engineer/india"
+    type: static
+
+  - name: "Naukri"
+    url: "https://www.naukri.com/backend-developer-jobs-in-india"
+    type: static
+
+  - name: "Instahyre"
+    url: "https://www.instahyre.com/search-jobs/"
+    type: static
+
+  - name: "Hirist"
+    url: "https://www.hirist.tech/"
+    type: static
+
+  - name: "Cutshort"
+    url: "https://cutshort.io/jobs"
+    type: static
+
+  - name: "Foundit"
+    url: "https://www.foundit.in/search/backend-developer-jobs"
+    type: static
+
+  - name: "Shine"
+    url: "https://www.shine.com/job-search/backend-developer-jobs"
+    type: static
+
+  - name: "TimesJobs"
+    url: "https://www.timesjobs.com/candidate/job-search.html"
+    type: static
+
+  - name: "YC Work at a Startup"
+    url: "https://www.workatastartup.com/jobs"
     type: static
 
   - name: "Arc.dev"

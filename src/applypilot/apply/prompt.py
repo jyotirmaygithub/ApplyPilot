@@ -127,13 +127,14 @@ Ineligible location -> RESULT:FAILED:not_eligible_location."""
     else:
         city_list = primary_city
 
+    country = preferences.get('work_location_country') or personal.get('country', 'the applicant country')
     return f"""== LOCATION CHECK (do this FIRST before any form) ==
 Read the job page. Determine the work arrangement. Then decide:
-- "Remote" or "work from anywhere" -> ELIGIBLE. Apply.
+- "Remote" or "work from anywhere" that accepts {country} -> ELIGIBLE. Apply.
 - "Hybrid" or "onsite" in {city_list} -> ELIGIBLE. Apply.
 - "Hybrid" or "onsite" in another city BUT the posting also says "remote OK" or "remote option available" -> ELIGIBLE. Apply.
 - "Onsite only" or "hybrid only" in any city outside the list above with NO remote option -> NOT ELIGIBLE. Stop immediately. Output RESULT:FAILED:not_eligible_location
-- City is overseas (India, Philippines, Europe, etc.) with no remote option -> NOT ELIGIBLE. Output RESULT:FAILED:not_eligible_location
+- Role requires relocation outside {country} with no remote option -> NOT ELIGIBLE. Output RESULT:FAILED:not_eligible_location
 - Cannot determine location -> Continue applying. If a screening question reveals it's non-local onsite, answer honestly and let the system reject if needed.
 Do NOT fill out forms for jobs that are clearly onsite in a non-acceptable location. Check EARLY, save time."""
 
@@ -195,12 +196,26 @@ def _build_screening_section(profile: dict) -> str:
     target_role = exp.get("target_role", personal.get("current_job_title", "software engineer"))
     work_auth = profile["work_authorization"]
 
+    preferences = profile.get("job_preferences", {})
+    if preferences.get("willing_to_relocate_within_india") or preferences.get("willing_to_relocate"):
+        relocate_scope = preferences.get("relocate_scope", "within India")
+        relocate_line = f"Location/relocation: lives in {city}; willing to relocate {relocate_scope}"
+    else:
+        relocate_line = f"Location/relocation: lives in {city}, cannot relocate"
+
+    education = exp.get("education_level", "see profile")
+    gpa = exp.get("gpa") or exp.get("cgpa") or preferences.get("university_cgpa")
+    education_line = f"Education: {education}" + (f"; CGPA/GPA: {gpa}" if gpa else "")
+
     return f"""== SCREENING QUESTIONS (be strategic) ==
 Hard facts -> answer truthfully from the profile. No guessing. This includes:
-  - Location/relocation: lives in {city}, cannot relocate
+  - {relocate_line}
+  - {education_line}
   - Work authorization: {work_auth.get('legally_authorized_to_work', 'see profile')}
   - Citizenship, clearance, licenses, certifications: answer from profile only
   - Criminal/background: answer from profile only
+  - Notice period / availability: answer from profile availability fields only
+  - Current vs expected CTC: use compensation.current_ctc and compensation.salary_expectation only
 
 Skills and tools -> This candidate is a {target_role} with {years} years experience.
 Only claim tools and experience demonstrated in the profile or resume.

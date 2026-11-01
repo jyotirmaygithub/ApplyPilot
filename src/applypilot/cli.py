@@ -292,6 +292,29 @@ def apply(
     )
 
 
+@app.command("import-tracker")
+def import_tracker() -> None:
+    """Import submitted URLs from Daily_Job_Application_Tracker.xlsx into the DB."""
+    _bootstrap()
+    from applypilot.tracking import (
+        already_applied_urls,
+        daily_tracker_path,
+        import_applied_into_db,
+        linkedin_tracker_path,
+    )
+
+    daily = daily_tracker_path()
+    linkedin = linkedin_tracker_path()
+    console.print(f"Daily tracker:    {daily} ({'OK' if daily.exists() else 'MISSING'})")
+    console.print(f"LinkedIn tracker: {linkedin} ({'OK' if linkedin.exists() else 'MISSING'})")
+    result = import_applied_into_db()
+    console.print(
+        f"[green]Imported.[/green] tracker_submitted={result['tracker_applied']} "
+        f"db_matched={result['matched']} db_updated={result['updated']}"
+    )
+    console.print(f"Unique submitted URLs loaded: {len(already_applied_urls())}")
+
+
 @app.command()
 def status() -> None:
     """Show pipeline statistics from the database."""

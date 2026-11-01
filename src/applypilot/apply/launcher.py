@@ -171,6 +171,26 @@ def mark_result(url: str, status: str, error: str | None = None,
                            apply_duration_ms = ?, apply_task_id = ?
             WHERE url = ?
         """, (now, duration_ms, task_id, url))
+        try:
+            from applypilot.tracking import append_daily_application
+
+            row = conn.execute(
+                "SELECT title, site, location, fit_score, application_url FROM jobs WHERE url = ?",
+                (url,),
+            ).fetchone()
+            if row:
+                append_daily_application(
+                    company=row["site"] or "",
+                    role=row["title"] or "",
+                    portal=row["site"] or "",
+                    job_url=row["application_url"] or url,
+                    location=row["location"] or "",
+                    match_notes=f"ApplyPilot fit_score={row['fit_score']}",
+                    status="Submitted — confirmed",
+                    evidence=f"ApplyPilot applied_at={now}",
+                )
+        except Exception:
+            logger.exception("Failed to append applied job to Daily Excel tracker")
     elif status == "previewed":
         conn.execute("""
             UPDATE jobs SET apply_status = 'previewed', apply_error = NULL,
@@ -574,6 +594,21 @@ def main(limit: int = 1, target_url: str | None = None,
 
     config.ensure_dirs()
     console = Console()
+
+    # Skip URLs already submitted in the Daily Excel tracker (duplicate guard)
+    try:
+        from applypilot.tracking import import_applied_into_db, skip_urls_for_apply
+
+        imported = import_applied_into_db()
+        tracker_skips = skip_urls_for_apply()
+        with _skipped_lock:
+            _skipped_urls.update(tracker_skips)
+        console.print(
+            f"[dim]Daily tracker: {imported.get('tracker_applied', 0)} submitted URLs loaded; "
+            f"DB updated {imported.get('updated', 0)}[/dim]"
+        )
+    except Exception as exc:
+        logger.warning("Could not load Daily Excel tracker skips: %s", exc)
 
     if continuous:
         effective_limit = 0

@@ -95,12 +95,27 @@ def score_job(resume_text: str, job: dict) -> dict:
     preferences = profile.get('job_preferences', {})
     preference_prompt = ''
     if preferences:
+        country = preferences.get('work_location_country') or profile.get('personal', {}).get('country', '')
+        if preferences.get('remote_only'):
+            location_rule = (
+                f'Remote-only is a hard requirement for work performable from {country or "the applicant country"}. '
+                'Onsite, hybrid, required relocation, or remote jobs restricted to countries that exclude the applicant '
+                'must score 1 regardless of technical fit. Unclear remote/geographic eligibility must score at most 4. '
+            )
+        else:
+            cities = preferences.get('acceptable_cities') or preferences.get('preferred_locations') or []
+            city_hint = ', '.join(cities) if isinstance(cities, list) and cities else 'listed preferred cities'
+            location_rule = (
+                f'Applicant is based in {country or "their country"}. '
+                f'Remote roles eligible from that country, plus hybrid/onsite in these areas, are acceptable: {city_hint}. '
+                'Roles requiring relocation outside the applicant country must score 1. '
+                'Unclear geographic eligibility must score at most 4. '
+            )
         preference_prompt = (
             '\nAPPLICANT PREFERENCES:\n' + json.dumps(preferences)
             + '\nEXPERIENCE BREAKDOWN:\n' + json.dumps(profile.get('experience', {}))
-            + '\nRemote-only is a hard requirement. Onsite, hybrid, or geography restrictions excluding the applicant country '
-            'must score 1 regardless of technical fit. Unclear remote/geographic eligibility must score at most 4. '
-            'Full-time, part-time and contracts are eligible when permitted. No salary floor means do not penalize low pay. '
+            + '\n' + location_rule
+            + 'Full-time, part-time and contracts are eligible when permitted. No salary floor means do not penalize low pay. '
             'Keep internship experience separate from full-time experience. Do not treat 6 months full-time as 3 years full-time. '
             'Judge seniority requirements honestly; do not inflate qualifications.'
         )

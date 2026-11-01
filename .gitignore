@@ -1,7 +1,10 @@
 # User data (NEVER commit)
+userdata/
 profile.json
 resume.txt
 resume.pdf
+*.xlsx
+!src/**/*.xlsx
 *.env
 .env.*
 !.env.example
